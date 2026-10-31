@@ -1,0 +1,12 @@
+{
+  "name": "固定費ノート - サブスク・固定費管理",
+  "short_name": "固定費ノート",
+  "description": "銀行やカードと連携しない、シンプルな固定費・サブスク管理",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7fa",
+  "theme_color": "#12243b",
+  "lang": "ja",
+  "icons": [{"src":"icon.png","sizes":"180x180","type":"image/png","purpose":"any"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}]
+}

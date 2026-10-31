@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12243b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="固定費ノート">
+  <meta name="description" content="契約更新の2日前にアプリ内でお知らせ。固定費とサブスクを端末内で管理。">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>固定費ノート | サブスク・固定費管理</title>
+  <style>
+    :root{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",Meiryo,sans-serif;color:#18283a;background:#f4f7fa;font-synthesis:none}
+    *{box-sizing:border-box}body{margin:0;padding:0 0 92px}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}
+    .wrap{max-width:760px;margin:0 auto;padding:0 16px}.top{background:#12243b;color:white;padding:22px 0 26px}.top-inner{display:flex;justify-content:space-between;align-items:center;gap:12px}.eyebrow{letter-spacing:.14em;font-size:10px;font-weight:800;color:#b9cce3}.top h1{font-size:23px;letter-spacing:-.02em;margin:4px 0 0}.subbrand{font-size:12px;color:#c5d1de;margin:6px 0 0}.top-mark{height:44px;width:44px;background:#233e59;display:grid;place-items:center;border-radius:14px;font-weight:850;font-size:24px}
+    .main{margin-top:-12px}.card{background:white;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 5px 24px rgba(22,43,66,.05);border:1px solid #e7edf3}.summary{background:linear-gradient(130deg,#e5f2ff,#f7fbff);border:1px solid #d5e7f8}.muted{color:#60758c}.tiny{font-size:12px}.text-sm{font-size:13px}.summary-title{margin:0;font-weight:700;color:#47617a;font-size:13px}.big{font-size:37px;line-height:1.2;font-weight:850;letter-spacing:-.04em;margin:8px 0}.big small{font-size:14px;color:#60758c;font-weight:500;letter-spacing:0}.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.stat{background:#fff9;border-radius:12px;padding:12px}.stat b{display:block;margin-top:3px;font-size:19px;font-variant-numeric:tabular-nums}.stat span{font-size:12px;color:#60758c}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 12px}.section-head h2{font-size:17px;margin:0}.section-head .hint{color:#72849a;font-size:12px}.btn{border:none;border-radius:11px;padding:11px 15px;font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:5px}.btn:focus-visible,.nav:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8dbcef;outline-offset:2px}.primary{background:#1c63b4;color:white}.soft{background:#edf4fb;color:#16578f}.ghost{background:#f3f6f9;color:#334d67}.danger{background:#fff0f0;color:#b33131}.outline{background:white;color:#35506b;border:1px solid #d8e2ec}.full{width:100%}.small{padding:8px 11px;font-size:12px}.button-row{display:flex;gap:8px;flex-wrap:wrap}
+    .alert{border:1px solid #f5dbaa;background:#fff7e8;border-radius:13px;padding:13px;margin-top:8px}.alert-title{font-size:14px;font-weight:800;color:#80510b;margin-bottom:7px}.alert-line{padding:8px 0;border-top:1px solid #f1e5cf;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}.tag{display:inline-block;background:#eef3f8;padding:5px 9px;border-radius:30px;font-size:11px;color:#435b73;font-weight:700}.tag.orange{background:#fff0d6;color:#91601a}.tag.blue{background:#e8f2ff;color:#175b9d}.tag.gray{background:#f1f2f4;color:#718094}.empty{text-align:center;padding:28px 16px;color:#6d8197;font-size:13px;line-height:1.8}.empty-icon{font-size:32px;margin-bottom:8px}.list{display:grid;gap:10px}.item{border:1px solid #e7edf3;padding:14px;border-radius:14px;background:white}.item-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.item h3{font-size:15px;margin:0 0 5px}.item-price{white-space:nowrap;font-weight:800;font-variant-numeric:tabular-nums}.item-meta{color:#718399;font-size:12px;line-height:1.8;margin:10px 0}.item-actions{display:flex;gap:7px;flex-wrap:wrap}.item.archived{opacity:.75}.mini-note{color:#5c7186;font-size:12px;margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}.due{font-weight:800;color:#af6512}.due-neutral{font-weight:700;color:#4b667f}
+    .filterbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.filterbar input,.filterbar select{width:100%}.field,input,select,textarea{min-width:0}.field>label{display:block;margin-bottom:6px;font-size:12px;color:#455d73;font-weight:800}.input{background:white;width:100%;border-radius:10px;border:1px solid #cfdae6;padding:12px;color:#172f46;outline:none}textarea.input{min-height:84px;resize:vertical}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-grid .wide{grid-column:1/-1}.help{font-size:11px;color:#74869a;line-height:1.6;margin:5px 0 0}.chiprow{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap}.chip{border:1px solid #d7e2ed;background:white;border-radius:30px;color:#3f5972;padding:8px 12px;font-size:12px;font-weight:800}.chip.active{background:#1c63b4;color:white;border-color:#1c63b4}.bar-row{margin-bottom:16px}.bar-info{display:flex;justify-content:space-between;font-size:13px;gap:10px;margin-bottom:6px}.bar-back{height:11px;background:#edf2f7;border-radius:12px;overflow:hidden}.bar-value{height:100%;background:#488aca;border-radius:12px}.settings-line{padding:12px 0;border-bottom:1px solid #e9eef3;display:flex;align-items:center;justify-content:space-between;gap:8px}.settings-line:last-child{border-bottom:none}.settings-line small{display:block;color:#60758c;margin-top:4px}.history{background:#f7f9fc;border-radius:11px;padding:12px;margin-top:12px}.history h4{font-size:13px;margin:0 0 8px}.history-entry{padding:8px 0;border-top:1px solid #e2e9f0;font-size:12px;color:#516980}.history-entry b{display:block;color:#203b55;margin-bottom:3px}
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(15px);border-top:1px solid #e0e7ef;display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);z-index:20}.nav-wrap{width:100%;max-width:760px;display:grid;grid-template-columns:repeat(4,1fr)}.nav{border:0;background:transparent;padding:12px 3px 10px;display:flex;flex-direction:column;gap:4px;align-items:center;color:#8292a3;font-weight:800;font-size:10px}.nav .ico{font-size:20px;line-height:1.2}.nav.active{color:#1c63b4}
+    [hidden]{display:none!important}.modal-overlay{position:fixed;inset:0;background:#10273acc;z-index:40;display:flex;align-items:flex-end;justify-content:center}.modal{background:#fff;border-radius:21px 21px 0 0;width:100%;max-width:620px;max-height:94dvh;overflow:auto;padding:20px 16px calc(18px + env(safe-area-inset-bottom))}.modal-head{display:flex;justify-content:space-between;align-items:center;margin:0 0 16px}.modal-head h2{margin:0;font-size:18px}.modal-foot{display:flex;gap:8px;margin-top:20px}.modal-foot button{flex:1}.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);max-width:min(90vw,500px);background:#153956;color:white;padding:12px 16px;border-radius:12px;z-index:50;box-shadow:0 6px 30px #12243b38;font-size:13px}.privacy{line-height:1.75;font-size:12px;color:#5d7188}.badge-warning{margin-left:7px;border-radius:20px;background:#fff0d2;color:#935a02;padding:4px 8px;font-size:11px;font-weight:800}
+    @media (min-width:650px){.main{margin-top:-16px}.modal-overlay{align-items:center}.modal{border-radius:20px;max-height:90dvh;padding:23px}.desktop-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.desktop-grid .card{height:100%}}
+    @media (max-width:370px){.big{font-size:32px}.btn{padding:10px 11px}.form-grid{grid-template-columns:1fr}.form-grid .wide{grid-column:auto}.item-header{gap:5px}.item-price{font-size:13px}}
+  </style>
+</head>
+<body>
+  <header class="top"><div class="wrap top-inner"><div><div class="eyebrow">PRIVATE FINANCE TOOL</div><h1>固定費ノート</h1><p class="subbrand">契約と更新日を、シンプルに管理。</p></div><div class="top-mark" aria-hidden="true">¥</div></div></header>
+  <main class="wrap main">
+    <div id="storage-warning" class="alert" hidden role="alert">ブラウザにデータを保存できません。プライベートブラウズや保存設定を確認してください。入力内容は保持されない場合があります。</div>
+    <section id="screen-home" data-screen>
+      <div class="card summary"><p class="summary-title">固定費・サブスクの月平均</p><div class="big" id="home-monthly">¥0 <small>/月</small></div><p class="tiny muted" style="margin:0">年払い契約も12分割して計算</p><div class="stat-row"><div class="stat"><span>年間換算額</span><b id="home-annual">¥0</b></div><div class="stat"><span>有効な契約</span><b id="home-count">0件</b></div></div></div>
+      <div class="section-head"><h2>更新アラート</h2><span class="hint">2日前から表示</span></div><div id="alerts"></div>
+      <div class="section-head"><h2>次の更新予定</h2><button class="btn small soft" data-action="new">＋ 契約を追加</button></div><div class="card" id="upcoming"></div>
+      <div class="section-head"><h2>カテゴリー別の月平均</h2></div><div class="card" id="home-category"></div>
+    </section>
+    <section id="screen-contracts" data-screen hidden>
+      <div class="section-head"><h2>契約一覧</h2><button class="btn primary" data-action="new">＋ 新規登録</button></div>
+      <div class="filterbar"><input id="search" class="input" type="search" placeholder="サービス名で検索" aria-label="サービスを検索"><select id="category-filter" class="input" aria-label="カテゴリーで絞り込み"></select></div>
+      <div class="chiprow"><button class="chip active" data-filter="active">契約中</button><button class="chip" data-filter="archived">解約済み</button><button class="chip" data-filter="all">すべて</button></div>
+      <div class="list" id="contract-list"></div>
+    </section>
+    <section id="screen-analysis" data-screen hidden>
+      <div class="section-head"><h2>支出分析</h2></div>
+      <div class="card"><div class="muted text-sm">年間換算の合計</div><div class="big" id="analysis-total">¥0</div><p class="tiny muted">現在契約中の金額から計算した推定値（実際の支払明細ではありません）</p></div>
+      <div class="card"><h3 style="font-size:15px;margin:0 0 15px">カテゴリー別内訳（月平均）</h3><div id="analysis-bars"></div></div>
+      <div class="card"><h3 style="font-size:15px;margin:0 0 12px">解約した契約の旧料金</h3><div id="archived-potential" style="font-size:22px;font-weight:800">¥0 /月</div><p class="help">解約済み契約を解約前の料金で継続した場合の月額換算額。実際の節約実績ではありません。</p></div>
+      <div class="card"><h3 style="font-size:15px;margin:0 0 12px">料金改定履歴</h3><div id="all-history"></div></div>
+    </section>
+    <section id="screen-settings" data-screen hidden>
+      <div class="section-head"><h2>カテゴリーの設定</h2></div>
+      <div class="card"><div id="category-settings"></div><div style="height:12px"></div><div class="field"><label for="new-category">カテゴリーを追加</label><div class="button-row"><input id="new-category" class="input" placeholder="例：仕事・学習" maxlength="40" style="flex:1;min-width:160px"><button class="btn primary" data-action="add-category">追加</button></div></div></div>
+      <div class="section-head"><h2>バックアップ・復元</h2></div>
+      <div class="card"><p class="privacy">契約データはこの端末のこのWebアプリ内に保存します。別の端末には自動で同期されません。ブラウザのデータ消去や機種変更に備え、定期的にバックアップしてください。</p><div class="button-row"><button class="btn primary" data-action="export">⬇ バックアップ保存</button><button class="btn soft" data-action="import">⬆ バックアップ復元</button></div><input id="import-file" type="file" accept=".json,application/json" hidden><p class="help">復元すると現在の全データが置き換わります。確認画面が出ます。</p></div>
+      <div class="section-head"><h2>プライバシー</h2></div>
+      <div class="card privacy">銀行口座・クレジットカードとは連携しません。請求メールの読み取りや外部への送信、アクセス解析も行いません。保存内容は暗号化されていないため、端末の画面ロックを使用してください。アラートはアプリを開いたときにのみ表示されます。<p style="margin-bottom:0">バージョン 1.0 ・ 初期版</p></div>
+    </section>
+  </main>
+  <nav class="bottom-nav" aria-label="メインメニュー"><div class="nav-wrap"><button class="nav active" data-nav="home"><span class="ico">⌂</span>ホーム</button><button class="nav" data-nav="contracts"><span class="ico">▤</span>契約一覧</button><button class="nav" data-nav="analysis"><span class="ico">▥</span>分析</button><button class="nav" data-nav="settings"><span class="ico">⚙</span>設定</button></div></nav>
+  <div id="edit-modal" class="modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal"><div class="modal-head"><h2 id="modal-title">契約を登録</h2><button type="button" class="btn ghost small" data-action="close-modal" aria-label="閉じる">✕ 閉じる</button></div>
+    <form id="contract-form"><input type="hidden" id="form-id"><div class="form-grid">
+      <div class="field wide"><label for="form-name">サービス名 *</label><input id="form-name" class="input" type="text" maxlength="120" required placeholder="例：動画配信サービス"></div>
+      <div class="field"><label for="form-category">カテゴリー *</label><select class="input" id="form-category" required></select></div>
+      <div class="field"><label for="form-amount">料金（円） *</label><input id="form-amount" class="input" type="number" min="0" max="100000000" step="1" inputmode="numeric" placeholder="例：1200" required></div>
+      <div class="field"><label for="form-cycle">支払い頻度 *</label><select id="form-cycle" class="input"><option value="monthly">毎月</option><option value="yearly">毎年</option></select></div>
+      <div class="field"><label for="form-date">次回の更新日 *</label><input class="input" id="form-date" type="date" required><p class="help">以後、毎月または毎年同じ日付を基準に計算します。</p></div>
+      <div class="field wide"><label for="form-note">メモ（任意）</label><textarea class="input" id="form-note" maxlength="600" placeholder="解約方法・契約プランなど（パスワードは保存しないでください）"></textarea></div>
+      <div class="field wide"><label for="form-status">契約状態</label><select class="input" id="form-status"><option value="active">契約中</option><option value="archived">解約済み</option></select></div>
+    </div><div class="modal-foot"><button type="button" class="btn outline" data-action="close-modal">キャンセル</button><button type="submit" class="btn primary">保存する</button></div></form>
+    <p class="help" style="margin-top:12px">料金を変更して保存すると、変更前後の金額・請求周期・変更日が自動で履歴に残ります。</p>
+  </div></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script>
+    'use strict';
+    (() => {
+      const KEY = 'fixed-cost-note-v1';
+      const INITIAL = ['固定費','娯楽','通信・インターネット','保険','車関連','その他'];
+      const money = n => '¥' + Math.round(n).toLocaleString('ja-JP');
+      const el = id => document.getElementById(id);
+      const escapeHTML = x => String(x == null ? '' : x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const toISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const today = () => toISO(new Date());
+      const utc = iso => Date.UTC(Number(iso.slice(0,4)),Number(iso.slice(5,7))-1,Number(iso.slice(8,10)));
+      const isISO = s => {if(typeof s!=='string'|| !/^\d{4}-\d{2}-\d{2}$/.test(s))return false;const d=new Date(utc(s));return !Number.isNaN(d.valueOf())&&d.toISOString().slice(0,10)===s;};
+      const daysUntil = iso => Math.round((utc(iso)-utc(today()))/86400000);
+      const formatDate = s => isISO(s) ? `${Number(s.slice(5,7))}月${Number(s.slice(8,10))}日` : '未登録';
+      const dateFromParts = (y,m,d) => { const last=new Date(Date.UTC(y,m,0)).getUTCDate();return `${y}-${String(m).padStart(2,'0')}-${String(Math.min(d,last)).padStart(2,'0')}`;};
+      const monthsAdd = (date,n) => {const y=Number(date.slice(0,4)), m=Number(date.slice(5,7)),day=Number(date.slice(8,10));const ref=new Date(Date.UTC(y,m-1+n,1));return dateFromParts(ref.getUTCFullYear(),ref.getUTCMonth()+1,day);};
+      const yearsAdd = (date,n) => dateFromParts(Number(date.slice(0,4))+n,Number(date.slice(5,7)),Number(date.slice(8,10)));
+      const nextRenewal = c => {if(c.status!=='active')return null;const base=c.renewalDate,now=today();if(base>=now)return base;let n;if(c.cycle==='monthly'){n=Math.max(0,(Number(now.slice(0,4))-Number(base.slice(0,4)))*12+Number(now.slice(5,7))-Number(base.slice(5,7)));let d=monthsAdd(base,n);return d>=now?d:monthsAdd(base,n+1);}n=Math.max(0,Number(now.slice(0,4))-Number(base.slice(0,4)));let d=yearsAdd(base,n);return d>=now?d:yearsAdd(base,n+1);};
+      const monthlyValue = c => c.amount/(c.cycle==='yearly'?12:1);
+      const uid = () => (typeof crypto!=='undefined' && crypto.randomUUID ? crypto.randomUUID() : 'id-'+Date.now()+'-'+Math.random().toString(36).slice(2));
+      const freshState = () => ({version:1,categories:[...INITIAL],contracts:[]});
+      let state=freshState(),currentTab='home',listFilter='active',selectedCategory='all',searchText='',toastTimer=null,storageReady=true;
+      const validAmount = n => Number.isInteger(n)&&n>=0&&n<=100000000;
+      function validate(data){
+        if(!data||data.version!==1||!Array.isArray(data.categories)||!Array.isArray(data.contracts)||data.categories.length>100||data.contracts.length>5000)throw Error('ファイルの形式が正しくありません。');
+        if(!data.categories.length||data.categories.some(c=>typeof c!=='string'||!c.trim()||c.length>40)||new Set(data.categories).size!==data.categories.length)throw Error('カテゴリーの情報が不正です。');
+        const ids=new Set();
+        for(const c of data.contracts){
+          if(!c||typeof c.id!=='string'||!/^[\w-]{1,100}$/.test(c.id)||ids.has(c.id)||typeof c.name!=='string'||!c.name.trim()||c.name.length>120||!data.categories.includes(c.category)||!validAmount(c.amount)||!['monthly','yearly'].includes(c.cycle)||!isISO(c.renewalDate)||!['active','archived'].includes(c.status)||typeof c.note!=='string'||c.note.length>600||!Array.isArray(c.history)||c.history.length>500)throw Error('契約データの形式が正しくありません。');
+          ids.add(c.id);
+          for(const h of c.history){if(!h||!isISO(h.date)||!validAmount(h.from)||!validAmount(h.to)||!['monthly','yearly'].includes(h.fromCycle)||!['monthly','yearly'].includes(h.toCycle))throw Error('料金改定履歴の形式が正しくありません。');}
+        }
+        return {version:1,categories:data.categories,contracts:data.contracts};
+      }
+      try{const raw=localStorage.getItem(KEY);if(raw)state=validate(JSON.parse(raw));localStorage.setItem('__fixed_cost_test__','1');localStorage.removeItem('__fixed_cost_test__');}catch(e){storageReady=false;el('storage-warning').hidden=false;console.warn('Storage initialization failed',e);}
+      const persist = () => {if(!storageReady)return false;try{localStorage.setItem(KEY,JSON.stringify(state));return true;}catch(e){storageReady=false;el('storage-warning').hidden=false;return false;}};
+      function toast(message){const t=el('toast');t.textContent=message;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},3300);}
+      const active = () => state.contracts.filter(c=>c.status==='active');
+      const upcomingSorted = () => active().map(c=>({...c,next:nextRenewal(c)})).sort((a,b)=>a.next.localeCompare(b.next));
+      function renderHome(){
+        const all=active(),mv=all.reduce((s,c)=>s+monthlyValue(c),0),ordered=upcomingSorted();
+        el('home-monthly').innerHTML=`${money(mv)} <small>/月</small>`;el('home-annual').textContent=money(mv*12);el('home-count').textContent=all.length+'件';
+        const due=ordered.filter(c=>{const d=daysUntil(c.next);return d>=0&&d<=2;});
+        el('alerts').innerHTML=due.length ? `<div class="alert"><div class="alert-title">⚠ 更新が2日以内の契約：${due.length}件</div>${due.map(c=>`<div class="alert-line"><span>${escapeHTML(c.name)}</span><span class="tag orange">${daysUntil(c.next)===0?'今日更新':daysUntil(c.next)===1?'明日更新':'2日後に更新'}</span></div>`).join('')}</div>` : `<div class="card" style="color:#667b90;font-size:13px">現在、2日以内に更新される契約はありません。</div>`;
+        el('upcoming').innerHTML=ordered.length?ordered.slice(0,6).map(c=>`<div class="settings-line"><div><strong style="font-size:14px">${escapeHTML(c.name)}</strong><small>${escapeHTML(c.category)} ・ ${formatDate(c.next)}</small></div><div style="text-align:right"><strong>${money(c.amount)}</strong><small>${daysUntil(c.next)===0?'今日':daysUntil(c.next)+'日後'}</small></div></div>`).join(''):'<div class="empty"><div class="empty-icon">⌕</div>契約を追加すると、更新予定が表示されます。</div>';
+        el('home-category').innerHTML=categoryBars(true);
+      }
+      function categoryData(){const sums=state.categories.map(cat=>({name:cat,amount:active().filter(c=>c.category===cat).reduce((s,c)=>s+monthlyValue(c),0)}));return sums.filter(c=>c.amount>0).sort((a,b)=>b.amount-a.amount);}
+      function categoryBars(compact=false){const ds=categoryData(),max=Math.max(1,...ds.map(x=>x.amount));if(!ds.length)return '<div class="empty">契約を登録するとカテゴリー別の費用が表示されます。</div>';return ds.slice(0,compact?4:100).map(c=>`<div class="bar-row"><div class="bar-info"><span>${escapeHTML(c.name)}</span><strong>${money(c.amount)} /月</strong></div><div class="bar-back"><div class="bar-value" style="width:${100*c.amount/max}%"></div></div></div>`).join('');}
+      function renderContracts(){
+        const filter=el('category-filter');const prev=selectedCategory;filter.innerHTML='<option value="all">すべてのカテゴリー</option>'+state.categories.map(c=>`<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`).join('');selectedCategory=state.categories.includes(prev)?prev:'all';filter.value=selectedCategory;
+        el('search').value=searchText;
+        document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===listFilter));
+        const arr=state.contracts.filter(c=>(listFilter==='all'||c.status===listFilter)&&(selectedCategory==='all'||c.category===selectedCategory)&&c.name.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())).sort((a,b)=>{if(a.status!==b.status)return a.status==='active'?-1:1;return (nextRenewal(a)||'9999').localeCompare(nextRenewal(b)||'9999')||a.name.localeCompare(b.name,'ja');});
+        el('contract-list').innerHTML=arr.length?arr.map(c=>{
+          const next=nextRenewal(c),days=next?daysUntil(next):null;
+          const dtext=c.status==='archived'?'解約済み':days===0?'今日更新':days<=2?`更新まで${days}日`:`次回更新：${formatDate(next)}（${days}日後）`;
+          return `<article class="item ${c.status==='archived'?'archived':''}"><div class="item-header"><div><h3>${escapeHTML(c.name)}</h3><span class="tag">${escapeHTML(c.category)}</span>${c.status==='archived'?'<span class="tag gray">解約済み</span>':days<=2?'<span class="tag orange">更新間近</span>':''}</div><div class="item-price">${money(c.amount)}<div class="tiny muted" style="text-align:right;font-weight:500">/${c.cycle==='yearly'?'年':'月'}</div></div></div><p class="item-meta"><span class="${c.status==='active'&&days<=2?'due':'due-neutral'}">${dtext}</span></p>${c.note?`<div class="mini-note">${escapeHTML(c.note)}</div>`:''}<div class="item-actions"><button class="btn soft small" data-action="edit" data-id="${c.id}">編集</button><button class="btn ghost small" data-action="history" data-id="${c.id}">改定履歴（${c.history.length}）</button><button class="btn ghost small" data-action="toggle-archive" data-id="${c.id}">${c.status==='archived'?'契約中に戻す':'解約済みにする'}</button><button class="btn danger small" data-action="delete" data-id="${c.id}">削除</button></div><div id="history-${c.id}" hidden></div></article>`;
+        }).join(''):'<div class="card empty">条件に合う契約がありません。<br>「＋ 新規登録」から追加できます。</div>';
+      }
+      function historyMarkup(c){return `<div class="history"><h4>${escapeHTML(c.name)}の料金改定履歴</h4>${c.history.length?c.history.slice().reverse().map(h=>`<div class="history-entry"><b>${escapeHTML(h.date)}</b>${money(h.from)} /${h.fromCycle==='yearly'?'年':'月'} → ${money(h.to)} /${h.toCycle==='yearly'?'年':'月'}</div>`).join(''):'<div class="tiny muted">まだ料金の変更履歴はありません。</div>'}</div>`;}
+      function renderAnalysis(){const all=active(),mv=all.reduce((s,c)=>s+monthlyValue(c),0);el('analysis-total').textContent=money(mv*12);el('analysis-bars').innerHTML=categoryBars();let old=state.contracts.filter(c=>c.status==='archived').reduce((s,c)=>s+monthlyValue(c),0);el('archived-potential').textContent=money(old)+' /月';const hs=state.contracts.flatMap(c=>c.history.map(h=>({name:c.name,...h}))).sort((a,b)=>b.date.localeCompare(a.date));el('all-history').innerHTML=hs.length?hs.map(h=>`<div class="settings-line"><div><b>${escapeHTML(h.name)}</b><small>${escapeHTML(h.date)} ・ ${money(h.from)} /${h.fromCycle==='yearly'?'年':'月'} → ${money(h.to)} /${h.toCycle==='yearly'?'年':'月'}</small></div></div>`).join(''):'<div class="empty">料金を変更すると、ここに履歴が残ります。</div>';}
+      function renderSettings(){el('category-settings').innerHTML=state.categories.map(c=>{const used=state.contracts.filter(x=>x.category===c).length;return `<div class="settings-line"><div><b>${escapeHTML(c)}</b><small>${used}件の契約</small></div><div class="button-row"><button class="btn small soft" data-action="rename-category" data-name="${escapeHTML(c)}">名前変更</button><button class="btn small danger" data-action="delete-category" data-name="${escapeHTML(c)}" ${used?'disabled title="使用中のカテゴリーは削除できません"':''}>削除</button></div></div>`}).join('');}
+      function render(){renderHome();renderContracts();renderAnalysis();renderSettings();document.querySelectorAll('[data-screen]').forEach(s=>s.hidden=s.id!=='screen-'+currentTab);document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===currentTab));}
+      function openModal(id=null){
+        const c=id?state.contracts.find(c=>c.id===id):null;el('modal-title').textContent=c?'契約を編集':'契約を登録';el('form-id').value=c?c.id:'';el('form-name').value=c?c.name:'';el('form-category').innerHTML=state.categories.map(cat=>`<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`).join('');el('form-category').value=c?c.category:state.categories[0];el('form-amount').value=c?c.amount:'';el('form-cycle').value=c?c.cycle:'monthly';el('form-date').value=c?c.renewalDate:today();el('form-note').value=c?c.note:'';el('form-status').value=c?c.status:'active';el('edit-modal').hidden=false;document.body.style.overflow='hidden';el('form-name').focus();
+      }
+      function closeModal(){el('edit-modal').hidden=true;document.body.style.overflow='';}
+      el('contract-form').addEventListener('submit',e=>{e.preventDefault();const id=el('form-id').value,name=el('form-name').value.trim(),category=el('form-category').value,amount=Number(el('form-amount').value),cycle=el('form-cycle').value,renewalDate=el('form-date').value,note=el('form-note').value.trim(),status=el('form-status').value;
+        if(!name||!state.categories.includes(category)||!validAmount(amount)||!['monthly','yearly'].includes(cycle)||!isISO(renewalDate)||!['active','archived'].includes(status)){toast('入力内容を確認してください。');return;}
+        if(id){const c=state.contracts.find(c=>c.id===id);if(!c){toast('編集する契約が見つかりません。');return;}if(c.amount!==amount||c.cycle!==cycle){c.history.push({date:today(),from:c.amount,to:amount,fromCycle:c.cycle,toCycle:cycle});}Object.assign(c,{name,category,amount,cycle,renewalDate,note,status});}
+        else{state.contracts.push({id:uid(),name,category,amount,cycle,renewalDate,note,status,history:[]});}
+        persist();closeModal();render();toast('契約を保存しました。');
+      });
+      document.addEventListener('click',e=>{const nav=e.target.closest('[data-nav]');if(nav){currentTab=nav.dataset.nav;render();scrollTo(0,0);return;}const fl=e.target.closest('[data-filter]');if(fl){listFilter=fl.dataset.filter;renderContracts();return;}const btn=e.target.closest('[data-action]');if(!btn)return;const act=btn.dataset.action,id=btn.dataset.id,name=btn.dataset.name,c=state.contracts.find(x=>x.id===id);
+        if(act==='new')openModal();if(act==='close-modal')closeModal();if(act==='edit'&&c)openModal(c.id);
+        if(act==='history'&&c){const panel=el('history-'+c.id);if(!panel)return;panel.hidden=!panel.hidden;if(!panel.hidden)panel.innerHTML=historyMarkup(c);}
+        if(act==='toggle-archive'&&c){const val=c.status==='active'?'archived':'active';if(!confirm(val==='archived'?`「${c.name}」を解約済みにしますか？（契約データと履歴は残ります）`:`「${c.name}」を契約中に戻しますか？`))return;c.status=val;persist();render();toast('契約状態を変更しました。');}
+        if(act==='delete'&&c){if(!confirm(`「${c.name}」を完全に削除しますか？\n料金改定履歴も削除されます。`))return;state.contracts=state.contracts.filter(x=>x.id!==c.id);persist();render();toast('契約を削除しました。');}
+        if(act==='add-category'){let cat=el('new-category').value.trim();if(!cat||cat.length>40){toast('カテゴリー名を40文字以内で入力してください。');return;}if(state.categories.includes(cat)){toast('同じ名前のカテゴリーがあります。');return;}state.categories.push(cat);el('new-category').value='';persist();render();toast('カテゴリーを追加しました。');}
+        if(act==='rename-category'){const val=prompt('新しいカテゴリー名を入力してください。',name);if(val===null)return;const trimmed=val.trim();if(!trimmed||trimmed.length>40||state.categories.includes(trimmed)&&trimmed!==name){toast('カテゴリー名を確認してください。');return;}state.categories=state.categories.map(x=>x===name?trimmed:x);state.contracts.forEach(x=>{if(x.category===name)x.category=trimmed;});persist();render();toast('カテゴリー名を変更しました。');}
+        if(act==='delete-category'){if(state.contracts.some(x=>x.category===name)){toast('使用中のカテゴリーは削除できません。');return;}if(state.categories.length===1){toast('カテゴリーを最低1種類残してください。');return;}if(!confirm(`「${name}」を削除しますか？`))return;state.categories=state.categories.filter(x=>x!==name);persist();render();toast('カテゴリーを削除しました。');}
+        if(act==='export'){const backup=JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2),blob=new Blob([backup],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='固定費ノート_バックアップ_'+today()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast('バックアップのダウンロードを開始しました。');}
+        if(act==='import')el('import-file').click();
+      });
+      el('search').addEventListener('input',e=>{searchText=e.target.value;renderContracts();el('search').focus();el('search').setSelectionRange(searchText.length,searchText.length);});
+      el('category-filter').addEventListener('change',e=>{selectedCategory=e.target.value;renderContracts();});
+      el('import-file').addEventListener('change',async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;if(file.size>2000000){toast('バックアップは2MB以内にしてください。');return;}try{const data=validate(JSON.parse(await file.text()));if(!confirm(`現在の契約 ${state.contracts.length} 件を置き換えて、バックアップの ${data.contracts.length} 件を復元しますか？\n復元前に現在のデータをバックアップすることをおすすめします。`))return;const old=state;state=data;if(!persist()){state=old;toast('保存に失敗しました。');return;}render();toast('バックアップを復元しました。');}catch(err){alert('復元できませんでした。\n'+err.message);}});
+      el('edit-modal').addEventListener('click',e=>{if(e.target===el('edit-modal'))closeModal();});
+      document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!el('edit-modal').hidden)closeModal();});
+      window.addEventListener('focus',render);document.addEventListener('visibilitychange',()=>{if(!document.hidden)render();});
+      render();
+    })();
+  </script>
+</body>
+</html>
