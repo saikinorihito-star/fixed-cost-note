@@ -108,6 +108,12 @@
       }
       try{const raw=localStorage.getItem(KEY);if(raw)state=validate(JSON.parse(raw));localStorage.setItem('__fixed_cost_test__','1');localStorage.removeItem('__fixed_cost_test__');}catch(e){storageReady=false;el('storage-warning').hidden=false;console.warn('Storage initialization failed',e);}
       const persist = () => {if(!storageReady)return false;try{localStorage.setItem(KEY,JSON.stringify(state));return true;}catch(e){storageReady=false;el('storage-warning').hidden=false;return false;}};
+       // Do not claim a change was saved if the browser rejects local storage.
+       const snapshotState = () => JSON.parse(JSON.stringify(state));
+       const commitChange = (previous,message) => {
+         if(!persist()){state=previous;render();toast('保存に失敗しました。バックアップを確認してください。');return false;}
+         render();toast(message);return true;
+       };
       function toast(message){const t=el('toast');t.textContent=message;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},3300);}
       const active = () => state.contracts.filter(c=>c.status==='active');
       const upcomingSorted = () => active().map(c=>({...c,next:nextRenewal(c)})).sort((a,b)=>a.next.localeCompare(b.next));
@@ -122,8 +128,14 @@
       function categoryData(){const sums=state.categories.map(cat=>({name:cat,amount:active().filter(c=>c.category===cat).reduce((s,c)=>s+monthlyValue(c),0)}));return sums.filter(c=>c.amount>0).sort((a,b)=>b.amount-a.amount);}
       function categoryBars(compact=false){const ds=categoryData(),max=Math.max(1,...ds.map(x=>x.amount));if(!ds.length)return '<div class="empty">契約を登録するとカテゴリー別の費用が表示されます。</div>';return ds.slice(0,compact?4:100).map(c=>`<div class="bar-row"><div class="bar-info"><span>${escapeHTML(c.name)}</span><strong>${money(c.amount)} /月</strong></div><div class="bar-back"><div class="bar-value" style="width:${100*c.amount/max}%"></div></div></div>`).join('');}
       function renderContracts(){
-        const filter=el('category-filter');const prev=selectedCategory;filter.innerHTML='<option value="all">すべてのカテゴリー</option>'+state.categories.map(c=>`<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`).join('');selectedCategory=state.categories.includes(prev)?prev:'all';filter.value=selectedCategory;
-        el('search').value=searchText;
+        const filter=el('category-filter');const prev=selectedCategory;
+        // Avoid rebuilding the filter or resetting the search field while the iPhone IME is editing.
+        const currentCategories=Array.from(filter.options).slice(1).map(o=>o.value);
+        if(filter.options.length!==state.categories.length+1||currentCategories.some((c,i)=>c!==state.categories[i])){
+          filter.innerHTML='<option value="all">すべてのカテゴリー</option>'+state.categories.map(c=>`<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`).join('');
+        }
+        selectedCategory=state.categories.includes(prev)?prev:'all';
+        if(filter.value!==selectedCategory)filter.value=selectedCategory;
         document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===listFilter));
         const arr=state.contracts.filter(c=>(listFilter==='all'||c.status===listFilter)&&(selectedCategory==='all'||c.category===selectedCategory)&&c.name.toLocaleLowerCase().includes(searchText.toLocaleLowerCase())).sort((a,b)=>{if(a.status!==b.status)return a.status==='active'?-1:1;return (nextRenewal(a)||'9999').localeCompare(nextRenewal(b)||'9999')||a.name.localeCompare(b.name,'ja');});
         el('contract-list').innerHTML=arr.length?arr.map(c=>{
@@ -142,22 +154,28 @@
       function closeModal(){el('edit-modal').hidden=true;document.body.style.overflow='';}
       el('contract-form').addEventListener('submit',e=>{e.preventDefault();const id=el('form-id').value,name=el('form-name').value.trim(),category=el('form-category').value,amount=Number(el('form-amount').value),cycle=el('form-cycle').value,renewalDate=el('form-date').value,note=el('form-note').value.trim(),status=el('form-status').value;
         if(!name||!state.categories.includes(category)||!validAmount(amount)||!['monthly','yearly'].includes(cycle)||!isISO(renewalDate)||!['active','archived'].includes(status)){toast('入力内容を確認してください。');return;}
-        if(id){const c=state.contracts.find(c=>c.id===id);if(!c){toast('編集する契約が見つかりません。');return;}if(c.amount!==amount||c.cycle!==cycle){c.history.push({date:today(),from:c.amount,to:amount,fromCycle:c.cycle,toCycle:cycle});}Object.assign(c,{name,category,amount,cycle,renewalDate,note,status});}
+         const previous=snapshotState();
+         if(id){const c=state.contracts.find(c=>c.id===id);if(!c){toast('編集する契約が見つかりません。');return;}if(c.amount!==amount||c.cycle!==cycle){c.history.push({date:today(),from:c.amount,to:amount,fromCycle:c.cycle,toCycle:cycle});if(c.history.length>500)c.history=c.history.slice(-500);}Object.assign(c,{name,category,amount,cycle,renewalDate,note,status});}
         else{state.contracts.push({id:uid(),name,category,amount,cycle,renewalDate,note,status,history:[]});}
-        persist();closeModal();render();toast('契約を保存しました。');
+         if(commitChange(previous,'契約を保存しました。'))closeModal();
       });
       document.addEventListener('click',e=>{const nav=e.target.closest('[data-nav]');if(nav){currentTab=nav.dataset.nav;render();scrollTo(0,0);return;}const fl=e.target.closest('[data-filter]');if(fl){listFilter=fl.dataset.filter;renderContracts();return;}const btn=e.target.closest('[data-action]');if(!btn)return;const act=btn.dataset.action,id=btn.dataset.id,name=btn.dataset.name,c=state.contracts.find(x=>x.id===id);
         if(act==='new')openModal();if(act==='close-modal')closeModal();if(act==='edit'&&c)openModal(c.id);
         if(act==='history'&&c){const panel=el('history-'+c.id);if(!panel)return;panel.hidden=!panel.hidden;if(!panel.hidden)panel.innerHTML=historyMarkup(c);}
-        if(act==='toggle-archive'&&c){const val=c.status==='active'?'archived':'active';if(!confirm(val==='archived'?`「${c.name}」を解約済みにしますか？（契約データと履歴は残ります）`:`「${c.name}」を契約中に戻しますか？`))return;c.status=val;persist();render();toast('契約状態を変更しました。');}
-        if(act==='delete'&&c){if(!confirm(`「${c.name}」を完全に削除しますか？\n料金改定履歴も削除されます。`))return;state.contracts=state.contracts.filter(x=>x.id!==c.id);persist();render();toast('契約を削除しました。');}
-        if(act==='add-category'){let cat=el('new-category').value.trim();if(!cat||cat.length>40){toast('カテゴリー名を40文字以内で入力してください。');return;}if(state.categories.includes(cat)){toast('同じ名前のカテゴリーがあります。');return;}state.categories.push(cat);el('new-category').value='';persist();render();toast('カテゴリーを追加しました。');}
-        if(act==='rename-category'){const val=prompt('新しいカテゴリー名を入力してください。',name);if(val===null)return;const trimmed=val.trim();if(!trimmed||trimmed.length>40||state.categories.includes(trimmed)&&trimmed!==name){toast('カテゴリー名を確認してください。');return;}state.categories=state.categories.map(x=>x===name?trimmed:x);state.contracts.forEach(x=>{if(x.category===name)x.category=trimmed;});persist();render();toast('カテゴリー名を変更しました。');}
-        if(act==='delete-category'){if(state.contracts.some(x=>x.category===name)){toast('使用中のカテゴリーは削除できません。');return;}if(state.categories.length===1){toast('カテゴリーを最低1種類残してください。');return;}if(!confirm(`「${name}」を削除しますか？`))return;state.categories=state.categories.filter(x=>x!==name);persist();render();toast('カテゴリーを削除しました。');}
+        if(act==='toggle-archive'&&c){const val=c.status==='active'?'archived':'active';if(!confirm(val==='archived'?`「${c.name}」を解約済みにしますか？（契約データと履歴は残ります）`:`「${c.name}」を契約中に戻しますか？`))return;const previous=snapshotState();c.status=val;commitChange(previous,'契約状態を変更しました。');}
+        if(act==='delete'&&c){if(!confirm(`「${c.name}」を完全に削除しますか？\n料金改定履歴も削除されます。`))return;const previous=snapshotState();state.contracts=state.contracts.filter(x=>x.id!==c.id);commitChange(previous,'契約を削除しました。');}
+        if(act==='add-category'){let cat=el('new-category').value.trim();if(!cat||cat.length>40){toast('カテゴリー名を40文字以内で入力してください。');return;}if(state.categories.includes(cat)){toast('同じ名前のカテゴリーがあります。');return;}const previous=snapshotState();state.categories.push(cat);if(commitChange(previous,'カテゴリーを追加しました。'))el('new-category').value='';}
+        if(act==='rename-category'){const val=prompt('新しいカテゴリー名を入力してください。',name);if(val===null)return;const trimmed=val.trim();if(!trimmed||trimmed.length>40||state.categories.includes(trimmed)&&trimmed!==name){toast('カテゴリー名を確認してください。');return;}const previous=snapshotState();state.categories=state.categories.map(x=>x===name?trimmed:x);state.contracts.forEach(x=>{if(x.category===name)x.category=trimmed;});commitChange(previous,'カテゴリー名を変更しました。');}
+        if(act==='delete-category'){if(state.contracts.some(x=>x.category===name)){toast('使用中のカテゴリーは削除できません。');return;}if(state.categories.length===1){toast('カテゴリーを最低1種類残してください。');return;}if(!confirm(`「${name}」を削除しますか？`))return;const previous=snapshotState();state.categories=state.categories.filter(x=>x!==name);commitChange(previous,'カテゴリーを削除しました。');}
         if(act==='export'){const backup=JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2),blob=new Blob([backup],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='固定費ノート_バックアップ_'+today()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast('バックアップのダウンロードを開始しました。');}
         if(act==='import')el('import-file').click();
       });
-      el('search').addEventListener('input',e=>{searchText=e.target.value;renderContracts();el('search').focus();el('search').setSelectionRange(searchText.length,searchText.length);});
+       let searchComposing=false;
+       const applySearch=()=>{const value=el('search').value;if(searchText===value)return;searchText=value;renderContracts();};
+       el('search').addEventListener('compositionstart',()=>{searchComposing=true;});
+       el('search').addEventListener('compositionend',()=>{searchComposing=false;applySearch();});
+       el('search').addEventListener('input',e=>{if(!searchComposing&&!e.isComposing)applySearch();});
+       el('search').addEventListener('search',()=>{if(!searchComposing)applySearch();});
       el('category-filter').addEventListener('change',e=>{selectedCategory=e.target.value;renderContracts();});
       el('import-file').addEventListener('change',async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;if(file.size>2000000){toast('バックアップは2MB以内にしてください。');return;}try{const data=validate(JSON.parse(await file.text()));if(!confirm(`現在の契約 ${state.contracts.length} 件を置き換えて、バックアップの ${data.contracts.length} 件を復元しますか？\n復元前に現在のデータをバックアップすることをおすすめします。`))return;const old=state;state=data;if(!persist()){state=old;toast('保存に失敗しました。');return;}render();toast('バックアップを復元しました。');}catch(err){alert('復元できませんでした。\n'+err.message);}});
       el('edit-modal').addEventListener('click',e=>{if(e.target===el('edit-modal'))closeModal();});
